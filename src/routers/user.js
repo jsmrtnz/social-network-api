@@ -8,6 +8,8 @@ router.post('/signup', userCtrl.signUp)
 router.post('/login', userCtrl.logIn)
 router.post('/logout', auth, userCtrl.logout)
 router.post('/logoutall', auth, userCtrl.logoutAll)
+// validate cookie with token
+router.get('/validate_cookie', auth, userCtrl.validateCookie)
 router.get('/profile', auth, userCtrl.getProfile)
 router.patch('/profile', auth, userCtrl.updateProfile)
 router.delete('/profile', auth, userCtrl.deleteProfile)

@@ -52,8 +52,16 @@ exports.deletePost = async (req, res) => {
 // /posts?sortBy=createdAt:desc
 exports.getPosts = async (req, res) => {
     try {
-        const posts = await getPosts(req.user)
-        res.send(posts)
+        const user = req.user
+        await user.populate({
+            path: 'posts',
+            options: {
+                sort: {
+                    createdAt: -1
+                }
+            }
+        }).execPopulate()
+        res.send(user.posts)
     } catch (e) {
         res.status(500).send()
     }
@@ -93,13 +101,7 @@ exports.viewTimeline = async (req, res) => {
         // Add user posts to the array
         timeline = timeline.concat(await getPosts(req.user))
         // Sort posts by created at descendently
-        timeline.sort(function(a, b) {
-            let dateA = new Date(a.createdAt), 
-                dateB = new Date(b.createdAt)
-            if (dateA < dateB) return 1
-            if (dateA > dateB) return -1
-            return 0
-        })
+        timeline = sortPosts(timeline)
         res.send(timeline)
     } catch (e) {
         res.status(500).send(e)
@@ -121,4 +123,15 @@ const getPosts = async (user) => {
         }
     }).execPopulate()
     return user.posts
+}
+
+const sortPosts = (postsArray) => {
+    postsArray.sort(function(a, b) {
+        let dateA = new Date(a.createdAt), 
+            dateB = new Date(b.createdAt)
+        if (dateA < dateB) return 1
+        if (dateA > dateB) return -1
+        return 0
+    })
+    return postsArray
 }

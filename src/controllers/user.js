@@ -7,6 +7,8 @@ exports.signUp = async (req, res) => {
     try {
         await user.save()
         const token = await user.generateAuthToken()
+        // Use of cookies to store jwt instead of react state.
+        res.cookie('token', token, { httpOnly: true })
         res.status(201).send({ user, token })
     } catch (e) {
         res.status(400).send(e)
@@ -17,6 +19,8 @@ exports.logIn = async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
+        // Use of cookies to store jwt instead of react state.
+        res.cookie('token', token, { httpOnly: true })
         res.send({ user, token })
     } catch (e) {
         res.status(400).send()
@@ -45,7 +49,13 @@ exports.logoutAll = async (req, res) => {
     }
 }
 
-exports.getProfile = async (req, res) => {
+// Validate cookie containing a token
+exports.validateCookie = (req, res) => {
+    const response = {user: req.user, token: req.token}
+    res.send(response)
+}
+
+exports.getProfile = (req, res) => {
     res.send(req.user)
 }
 
