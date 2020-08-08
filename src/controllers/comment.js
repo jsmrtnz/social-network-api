@@ -3,13 +3,13 @@ const Post = require('../models/post')
 
 exports.createComment = async (req, res) => {
     try {
-        const post = await Post.findByIdAndUpdate({ _id: req.body.idPost }, { $inc: { n_comments: 1 } })
+        const post = await Post.findByIdAndUpdate({ _id: req.body._id }, { $inc: { n_comments: 1 } })
         if (!post){
             res.status(404).send()
         }
         const comment = new Comment({ 
             content: req.body.content,
-            _idPost: req.body.idPost,
+            _idPost: req.body._id,
             author: req.user._id
         })
         await comment.save()
@@ -21,7 +21,7 @@ exports.createComment = async (req, res) => {
 
 exports.getComments = async (req, res) => {
     try {
-        const post = await Post.findById({ _id: req.body.idPost })
+        const post = await Post.findById({ _id: req.body._id })
         if (!post){
             res.status(404).send()
         }

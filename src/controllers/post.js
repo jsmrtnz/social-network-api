@@ -20,12 +20,12 @@ exports.createPost = async (req, res) => {
 
 exports.updatePost = async (req, res) => {
     try {
-        const post = await Post.findOne({ _id: req.body.idPost, owner: req.user._id })
+        const post = await Post.findOne({ _id: req.query.id, owner: req.user._id })
         if(!post) {
             return res.status(404).send()
         }
         if(req.file !== undefined) {
-            post.image = req.file.buffer
+            post.image = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
         }
         if(req.body.content) {
             post.content = req.body.content
@@ -39,7 +39,7 @@ exports.updatePost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
     try {
-        const post = await Post.findOne({ _id: req.body.idPost, owner: req.user._id })
+        const post = await Post.findOne({ _id: req.query.id, owner: req.user._id })
         if (!post) {
             return res.status(404).send()
         }
@@ -69,7 +69,7 @@ exports.getPosts = async (req, res) => {
 
 exports.likePost = async (req, res) => {
     try {
-        const post = await Post.findById({ _id: req.body.idPost })
+        const post = await Post.findById({ _id: req.body._id })
         let likes = post.likes.length
         if(!post){
             return res.status(404).send()
@@ -80,7 +80,7 @@ exports.likePost = async (req, res) => {
         }
         likes = post.likes.push(req.user._id)
         await post.save()
-        res.status(200).send({ likes })
+        res.status(200).send(post)
     } catch (e) {
         res.status(500).send(e)
     }
@@ -109,13 +109,13 @@ exports.viewTimeline = async (req, res) => {
 }
 
 const getPosts = async (user) => {
-    let match = {}
-    let lastDay = new Date()
-    lastDay = lastDay.setDate(lastDay.getDate() - 1)
-    match.createdAt = { $gte: new Date(lastDay), $lte: new Date() }
+    // let match = {}
+    // let lastDay = new Date()
+    // lastDay = lastDay.setDate(lastDay.getDate() - 1)
+    // match.createdAt = { $gte: new Date(lastDay), $lte: new Date() }
     await user.populate({
         path: 'posts',
-        match,
+        // match,
         options: {
             sort: {
                 createdAt: -1

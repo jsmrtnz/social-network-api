@@ -11,7 +11,7 @@ const postSchema = new mongoose.Schema({
     image: {
         type: Buffer,
         required: [function () {
-            return this.content === undefined
+            return this.content === ''
         }, 'Try creating some content!']
     },
     owner: {
