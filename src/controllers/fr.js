@@ -20,11 +20,11 @@ exports.sendFriendReq = async (req, res) => {
 
 exports.acceptDecline = async (req, res) => {
     try {
-        const request = await FR.findById(req.body._idFr)
-        if (!request || !req.body.answer) {
+        const request = await FR.findById(req.query.id)
+        if (!request || !req.query.v) {
             throw new Error()
         }
-        if (req.body.answer === 'accepted') {
+        if (req.query.v === 'accepted') {
             const sender = await User.findById(request.from)
             const recipient = await User.findById(request.to)
             // User sending a request, can not accept the same request.
@@ -36,7 +36,7 @@ exports.acceptDecline = async (req, res) => {
             await sender.save()
             await recipient.save()
             await request.remove()
-        } else if (req.body.answer === 'declined') {
+        } else if (req.query.v === 'declined') {
             await request.remove()
         } else {
             return res.status(400).send()
