@@ -51,25 +51,19 @@ exports.logoutAll = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const user = await User.findById({_id: req.query.id}, {"email" : 0});
-    await user.populate({
-      path: 'posts',
-      options: {
-        sort: {
-          createdAt: -1
-        }
-      }
-    }).execPopulate()
-    res.send({ user, posts: user.posts});
+    res.send(user);
   } catch (e) {
     res.status(500).send();
   }
 }
+// Return users who are not user's friends and user itself.
 // /users?limit=10&skip=10
 exports.getUsers = async (req, res) => {
   try {
-    let array = req.user.friends
-    array.push(req.user._id)
-    const users = await User.find({ _id: { $nin: array }}, {"firstname" : 1, "lastname": 1, "avatar": 1, "gender": 1}, {
+    let array = req.user.friends;
+    array.push(req.user._id);
+    const users = await User.find({ _id: { $nin: array }}, 
+      {"firstname" : 1, "lastname": 1, "avatar": 1, "gender": 1}, {
       limit: parseInt(req.query.limit),
       skip: parseInt(req.query.skip),
     });
@@ -78,7 +72,17 @@ exports.getUsers = async (req, res) => {
     res.status(500).send();
   }
 }
-
+// Return user's friends
+exports.getFriends = async (req, res) => {
+  try {
+    const user = await User.findById({_id: req.query.id});
+    const friends = await User.find({ _id: { $in: user.friends }}, 
+      {"firstname" : 1, "lastname": 1, "avatar": 1, "gender": 1});
+    res.send(friends);
+  } catch (e) {
+    res.status(500).send();
+  }
+}
 exports.getUserMeta = async (req, res) => {
   try {
     const user = await User.findById({_id: req.query.id}, {"firstname" : 1, "lastname": 1, "avatar": 1, "gender": 1});
@@ -126,9 +130,9 @@ exports.deleteProfile = async (req, res) => {
 exports.deleteFriend = async (req, res) => {
   try {
     req.user.friends = req.user.friends.filter((friend) => {
-      return friend.toString() !== req.body.id
+      return friend.toString() !== req.query.id
     })
-    const friendDeleted = await User.findById({_id: req.body.id})
+    const friendDeleted = await User.findById({_id: req.query.id})
     friendDeleted.friends = friendDeleted.friends.filter((friend) => {
       return friend.toString() !== req.user._id.toString()
     })

@@ -8,10 +8,10 @@ router.post('/signup', userCtrl.signUp)
 router.post('/login', userCtrl.logIn)
 router.post('/logout', auth, userCtrl.logout)
 router.post('/logoutall', auth, userCtrl.logoutAll)
-// validate cookie with token
-router.get('/validate_cookie', auth, userCtrl.validateCookie)
+router.get('/validate_cookie', auth, userCtrl.validateCookie) // validate cookie with token
 router.get('/user', auth, userCtrl.getUser)
 router.get('/users', auth, userCtrl.getUsers)
+router.get('/friends', auth, userCtrl.getFriends)
 router.get('/user/meta', auth, userCtrl.getUserMeta)
 router.get('/profile', auth, userCtrl.getProfile)
 router.patch('/profile', auth, userCtrl.updateProfile)

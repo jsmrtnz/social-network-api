@@ -49,10 +49,10 @@ exports.deletePost = async (req, res) => {
     res.status(500).send(e)
   }
 }
-// /posts?sortBy=createdAt:desc
+// /posts?id=1&sortBy=createdAt:desc
 exports.getPosts = async (req, res) => {
   try {
-    const user = req.user
+    const user = await User.findById({_id: req.query.id});
     await user.populate({
       path: 'posts',
       options: {
