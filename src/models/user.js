@@ -80,12 +80,12 @@ userSchema.virtual('friendRequests', {
     foreignField: 'to'
 })
 
-userSchema.methods.toJSON = function () {
-    const userObject = this.toObject()
-    delete userObject.password
-    delete userObject.tokens
-    return userObject
-}
+// userSchema.methods.toJSON = function () {
+//     const userObject = this.toObject()
+//     delete userObject.password
+//     delete userObject.tokens
+//     return userObject
+// }
 
 userSchema.methods.generateAuthToken = async function () {
     const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET) // , { expiresIn: '30 minutes' }

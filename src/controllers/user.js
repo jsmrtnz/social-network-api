@@ -50,7 +50,7 @@ exports.logoutAll = async (req, res) => {
 // Just added. New!
 exports.getUser = async (req, res) => {
   try {
-    const user = await User.findById({_id: req.query.id}, {"email" : 0});
+    const user = await User.findById({_id: req.query.id}, {"email" : 0, "tokens" : 0, "password" : 0});
     res.send(user);
   } catch (e) {
     res.status(500).send();
@@ -145,10 +145,9 @@ exports.deleteFriend = async (req, res) => {
 }
 
 exports.uploadAvatar = async (req, res) => {
-  const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
-  req.user.avatar = buffer
+  req.user.avatar = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
   await req.user.save()
-  res.send()
+  res.send(req.user)
 }
 
 exports.uploadFailed = (error, req, res, next) => {
