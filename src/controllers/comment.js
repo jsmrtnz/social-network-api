@@ -21,7 +21,7 @@ exports.createComment = async (req, res) => {
 
 exports.getComments = async (req, res) => {
   try {
-    const post = await Post.findById({ _id: req.body._id })
+    const post = await Post.findById({ _id: req.query.id })
     if (!post) {
       res.status(404).send()
     }
@@ -56,7 +56,7 @@ exports.updateComment = async (req, res) => {
 
 exports.deleteComment = async (req, res) => {
   try {
-    const comment = await Comment.findOneAndDelete({ _id: req.body._id, author: req.user._id })
+    const comment = await Comment.findOneAndDelete({ _id: req.query.id, author: req.user._id })
     if (!comment) {
       return res.status(404).send()
     }
